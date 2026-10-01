@@ -18,7 +18,7 @@ The main adjustable parameters include:
 
 ---
 
-## Overview
+# Overview
 
 This program was developed to simplify control of the:
 
@@ -26,12 +26,14 @@ This program was developed to simplify control of the:
 
 for ultrasound stimulation experiments.
 
-Instead of manually configuring the signal generator for every experiment, the major waveform parameters can be defined directly in the Python script.
+Instead of manually configuring the signal generator for every experiment, the major waveform parameters can be defined directly at the beginning of the Python script.
 
 The overall workflow is:
 
 ```text
-Install Keysight IO Libraries Suite
+Install IOLSPrerequisites
+        ↓
+Install Keysight IO Libraries Suite Main
         ↓
 Open Keysight Connection Expert
         ↓
@@ -107,23 +109,56 @@ The signal generator provides the electrical waveform that is subsequently ampli
 
 # Prerequisite: Keysight IO Libraries Suite
 
-Before running the Python program, install:
+Before running the Python program, the **Keysight IO Libraries Suite** must be installed.
 
-**Keysight IO Libraries Suite**
+For the installation package used in this project, two installer files are used:
 
-which includes:
+```text
+IOLSPrerequisites-21.1.17-windows-x64.exe
+IOLibrariesSuiteMain-21.1.17-windows-x64.exe
+```
 
-**Keysight Connection Expert**
+The installation order is important.
 
-Keysight Connection Expert is used to identify and verify the communication interface between the computer and the signal generator.
+Install them in the following order:
 
-Official Keysight website:
-
-https://www.keysight.com/find/iosuite
+```text
+1. IOLSPrerequisites-21.1.17-windows-x64.exe
+        ↓
+2. IOLibrariesSuiteMain-21.1.17-windows-x64.exe
+```
 
 ---
 
-## Using Keysight Connection Expert
+## Step 1 — Install IOLS Prerequisites
+
+First, run:
+
+```text
+IOLSPrerequisites-21.1.17-windows-x64.exe
+```
+
+Complete the prerequisite installation before proceeding to the main Keysight IO Libraries Suite installer.
+
+---
+
+## Step 2 — Install Keysight IO Libraries Suite Main
+
+After the prerequisite installation is complete, run:
+
+```text
+IOLibrariesSuiteMain-21.1.17-windows-x64.exe
+```
+
+Complete the installation.
+
+After installation, **Keysight Connection Expert** should be available on the computer.
+
+---
+
+# Keysight Connection Expert
+
+Keysight Connection Expert is used to verify communication between the computer and the signal generator and to determine the VISA resource address.
 
 After installation:
 
@@ -142,7 +177,7 @@ ASRL4::INSTR
 
 The VISA address is system dependent.
 
-Another computer or another connection may instead show something such as:
+Another computer or another connection may show a different address, for example:
 
 ```text
 ASRL3::INSTR
@@ -151,7 +186,7 @@ USB0::...
 TCPIP0::...
 ```
 
-Therefore, always verify the address in Keysight Connection Expert before running the program.
+Therefore, always verify the actual VISA address in **Keysight Connection Expert** before running the Python program.
 
 ---
 
@@ -191,19 +226,37 @@ Ultrasound-Signal-Generator-Control/
 
 # Quick Start
 
-## 1. Install Keysight IO Libraries Suite
+## 1. Install Keysight software
 
-Install Keysight IO Libraries Suite and open:
+Install:
+
+```text
+IOLSPrerequisites-21.1.17-windows-x64.exe
+```
+
+first.
+
+Then install:
+
+```text
+IOLibrariesSuiteMain-21.1.17-windows-x64.exe
+```
+
+---
+
+## 2. Open Keysight Connection Expert
+
+Open:
 
 ```text
 Keysight Connection Expert
 ```
 
-Confirm that the **GW Instek AFG-3022** is detected correctly.
+and confirm that the **GW Instek AFG-3022** is detected.
 
 ---
 
-## 2. Find the VISA Address
+## 3. Find the VISA Address
 
 For example:
 
@@ -215,7 +268,7 @@ Copy this address.
 
 ---
 
-## 3. Open the Python Program
+## 4. Open the Python Program
 
 Open:
 
@@ -260,7 +313,7 @@ The VISA address is defined by:
 VISA_ADDRESS = "ASRL4::INSTR"
 ```
 
-This address should match the VISA resource address shown in:
+This address must match the VISA resource address shown in:
 
 **Keysight Connection Expert**
 
@@ -276,7 +329,13 @@ change the Python setting to:
 VISA_ADDRESS = "ASRL5::INSTR"
 ```
 
-Do not assume that `ASRL4::INSTR` will be valid on every computer.
+Do not assume that:
+
+```text
+ASRL4::INSTR
+```
+
+will be valid on every computer.
 
 ---
 
@@ -300,8 +359,6 @@ The default value corresponds to:
 300,000 Hz
 = 300 kHz
 ```
-
-To use another frequency, modify the value directly.
 
 For example:
 
@@ -517,12 +574,6 @@ Wait 3 seconds
 Output OFF
 ```
 
-To change the total stimulation duration, modify:
-
-```python
-OUTPUT_DURATION_S
-```
-
 For example:
 
 ```python
@@ -535,11 +586,13 @@ will maintain the output for:
 10 seconds
 ```
 
+before automatically disabling it.
+
 ---
 
 # Output Channel Control
 
-The program also includes:
+The program includes:
 
 ```python
 ENABLE_CHANNEL_2 = True
@@ -558,7 +611,7 @@ OUTP
 OUTP2
 ```
 
-If Channel 2 is not required or the connected device configuration does not require it, change the parameter to:
+If Channel 2 is not required, change the parameter to:
 
 ```python
 ENABLE_CHANNEL_2 = False
@@ -675,58 +728,51 @@ OUTP
 OUTP2
 ```
 
-These commands are used to configure:
+These commands are used to configure the signal generator.
 
-```text
-FUNC SIN
-```
+### `*IDN?`
 
-→ sine waveform
+Queries the connected instrument identity.
 
-```text
-FREQ
-```
+### `FUNC SIN`
 
-→ carrier frequency
+Sets the waveform to sine.
 
-```text
-VOLT
-```
+### `FREQ`
 
-→ output amplitude
+Sets the carrier frequency.
 
-```text
-BURS:STAT
-```
+### `VOLT`
 
-→ burst mode
+Sets the electrical output amplitude.
 
-```text
-BURS:NCYC
-```
+### `BURS:STAT`
 
-→ number of cycles per burst
+Enables burst mode.
 
-```text
-BURS:INT
-```
+### `BURS:NCYC`
 
-→ burst repetition interval
+Sets the number of cycles per burst.
 
-```text
-BURS:TRIG:SOUR
-```
+### `BURS:INT`
 
-→ burst trigger source
+Sets the burst repetition interval.
 
-```text
-OUTP
-OUTP2
-```
+### `BURS:TRIG:SOUR`
 
-→ output-channel control
+Sets the burst trigger source.
 
-The exact command behavior depends on the connected instrument and its programming interface.
+### `OUTP`
+
+Controls the primary output.
+
+### `OUTP2`
+
+Controls the second output channel.
+
+The current command sequence was developed for the experimental configuration using the **GW Instek AFG-3022**.
+
+If another signal-generator model is used, supported commands and channel behavior should be verified using the corresponding programming manual.
 
 ---
 
@@ -886,7 +932,7 @@ ASRL4::INSTR
 
 open **Keysight Connection Expert** and confirm the actual VISA address.
 
-The address may have changed.
+The VISA address may change depending on the computer or connection.
 
 ---
 
@@ -898,7 +944,26 @@ Confirm that PyVISA is installed:
 pip install pyvisa
 ```
 
-Also confirm that Keysight IO Libraries Suite is installed correctly.
+Also confirm that both Keysight installers were installed in the correct order:
+
+```text
+1. IOLSPrerequisites-21.1.17-windows-x64.exe
+2. IOLibrariesSuiteMain-21.1.17-windows-x64.exe
+```
+
+---
+
+## Signal Generator Not Detected in Connection Expert
+
+Check:
+
+- signal-generator power
+- computer connection
+- USB / serial cable
+- Keysight IO Libraries installation
+- instrument communication settings
+
+Restarting Keysight Connection Expert after reconnecting the instrument may also be necessary.
 
 ---
 
@@ -906,7 +971,7 @@ Also confirm that Keysight IO Libraries Suite is installed correctly.
 
 Check:
 
-- signal generator power
+- signal-generator power
 - USB / serial connection
 - VISA address
 - communication settings
@@ -928,7 +993,35 @@ or:
 OUTP2
 ```
 
-verify the corresponding command in the programming manual for the connected signal generator.
+verify the corresponding command in the programming manual for the **GW Instek AFG-3022**.
+
+---
+
+# Installation and Execution Summary
+
+The complete setup sequence is:
+
+```text
+IOLSPrerequisites-21.1.17-windows-x64.exe
+        ↓
+IOLibrariesSuiteMain-21.1.17-windows-x64.exe
+        ↓
+Keysight Connection Expert
+        ↓
+Detect GW Instek AFG-3022
+        ↓
+Copy VISA address
+        ↓
+Install PyVISA
+        ↓
+Open signal_generator_control.py
+        ↓
+Edit USER SETTINGS
+        ↓
+Run Python script
+        ↓
+Generate configured ultrasound waveform
+```
 
 ---
 
@@ -956,7 +1049,7 @@ This program was developed to simplify repeatable configuration of an ultrasound
 
 It is intended to reduce repetitive manual configuration while keeping the major experimental parameters easily accessible at the beginning of the script.
 
-The main user-editable workflow is therefore:
+The main user-editable workflow is:
 
 ```text
 Find VISA address
