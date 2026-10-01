@@ -110,6 +110,7 @@ The signal generator provides the electrical waveform that is subsequently ampli
 # Prerequisite: Keysight IO Libraries Suite
 
 Before running the Python program, the **Keysight IO Libraries Suite** must be installed.
+
 Download the Keysight IO Libraries Suite from the official Keysight website: https://www.keysight.com/find/iosuiteproductcounter
 
 For the installation package used in this project, two installer files are used:
